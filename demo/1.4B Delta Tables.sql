@@ -77,3 +77,24 @@ RESTORE TABLE smartphones TO VERSION AS OF 2;
 -- COMMAND ----------
 
 SELECT * FROM smartphones;
+
+-- COMMAND ----------
+
+DROP SCHEMA db_y CASCADE;
+CREATE SCHEMA db_y
+LOCATION 'dbfs:/custom/path/db_y.db'; -- specify the data/logs location
+
+USE db_y; -- create tables under db_y schema in hive repo
+CREATE TABLE table_1
+(width INT, length INT, height INT); -- will be managed table
+CREATE TABLE table_2
+(width INT, length INT, height INT)
+LOCATION 'dbfs:/some/path_1/table_2'; -- will be external table
+INSERT INTO table_2
+VALUES (1,2,3);
+
+
+-- COMMAND ----------
+
+-- DESCRIBE EXTENDED table_1; -- dbfs:/custom/path/db_y.db/table_1
+DESCRIBE EXTENDED table_2; -- dbfs:/some/path_1/table_2
