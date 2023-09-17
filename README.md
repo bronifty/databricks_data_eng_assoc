@@ -1,12 +1,24 @@
 # DATABRICKS DATA ENG ASSOC
 
 - [UDEMY COURSE](https://www.udemy.com/course/databricks-certified-data-engineer-associate/learn/lecture/34742270#overview)
-- [COURSE REPO](https://github.com/derar-alhussein/Databricks-Certified-Data-Engineer-Associate.git)
+- [COURSE REPO](https://github.com/bronifty/Databricks-Certified-Data-Engineer-Associate)
 - [AZURE DATABRICKS DASHBOARD](https://adb-2695751147948847.7.azuredatabricks.net/browse/folders/2309189472105813?o=2695751147948847)
 - [DATABRICKS COMMUNITY DASHBOARD](https://community.cloud.databricks.com/?o=6687968818076754#)
 
 ### CHEATSHEET
 
+```python
+dbutils.help();
+dbutils.fs.help();
+employees_file = dbutils.fs.ls('dbfs:/user/hive/warehouse/employees'); # get a handle to the file
+print(employees_file);
+display(employees_file); # print grid format
+%fs ls 'dbfs:/user/hive/warehouse/employees'; # shortcut for the above
+
+%python # the pragma aka pyspark 'magic command' to interpret this as python in a sql file
+files = dbutils.fs.ls(f"{dataset_bookstore}/books-csv") # f-string interpolating dataset_bookstore directory
+display(files) # print the grid of the files
+```
 
 ```sql 
 CREATE TABLE IF NOT EXISTS smartphones
@@ -78,8 +90,39 @@ CREATE GLOBAL TEMP VIEW view_name
 AS query; -- global view (cluster scoped)
 SELECT *
 FROM global_temp.view_name; -- referenced by its prefix in query
+
+SHOW TABLES; -- show tables and views
+
+CREATE TEMPORARY VIEW temp_view_phones_brands
+AS SELECT DISTINCT brand 
+FROM hive_metastore.default.smartphones;
+SELECT * FROM temp_view_phones_brands;
+SHOW TABLES IN global_temp; 
+CREATE GLOBAL TEMPORARY VIEW latest_phones
+AS SELECT * FROM smartphones
+WHERE year > 2020
+ORDER BY year DESC;
+SELECT * FROM global_temp.latest_phones;
+
+CREATE TABLE books_unparsed AS
+SELECT * FROM csv.`${dataset.bookstore}/books-csv`;
+SELECT * FROM books_unparsed; -- a single column with rows 
+
+CREATE TEMP VIEW books_tmp_vw
+   (book_id STRING, title STRING, author STRING, category STRING, price DOUBLE)
+USING CSV
+OPTIONS (
+  path = "${dataset.bookstore}/books-csv/export_*.csv",
+  header = "true",
+  delimiter = ";"
+); -- specify the raw data source with USING
+CREATE TABLE books AS 
+  SELECT * FROM books_tmp_vw; -- CTAS from view
+SELECT * FROM books -- grid format multiple columns
+
+SELECT *,
+    input_file_name() source_file -- input_file_name() is a built-in Spark function to get the filename, which is useful for debugging
+FROM json.`${dataset.bookstore}/customers-json`; -- select from all the files in the directory (will auto-combine all files if they have same schema)
 ```
-
-
 
 

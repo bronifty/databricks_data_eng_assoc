@@ -98,3 +98,7 @@ VALUES (1,2,3);
 
 -- DESCRIBE EXTENDED table_1; -- dbfs:/custom/path/db_y.db/table_1
 DESCRIBE EXTENDED table_2; -- dbfs:/some/path_1/table_2
+
+-- COMMAND ----------
+
+SHOW TABLES;
